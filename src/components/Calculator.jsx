@@ -44,7 +44,7 @@ function Calculator() {
 
   return (
     <div className="calculator-container">
-      <h1 className="title">L-T-P-S Average Calculator</h1>
+      <h1 className="title"></h1>
       <div className="inputs-grid">
         {components.map(({ name, label, weight }) => (
           <div className="input-group" key={name}>
