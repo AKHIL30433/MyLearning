@@ -1,72 +1,84 @@
 import React, { useState } from 'react';
-import { BookOpen, Award, Sliders, Code } from 'lucide-react';
 
-// This is our reusable input field component
-const InputField = ({ icon, label, weight, value, onChange }) => (
-  <div className="input-group">
-    <label>
-      {icon} {label} <span className="weight">(Weight: {weight}%)</span>
-    </label>
-    <input
-      type="number"
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder="e.g., 85"
-      min="0"
-      max="100"
-    />
-  </div>
-);
+// Configuration for each input field
+const components = [
+  { name: 'lecture', label: 'Lecture', weight: 100 },
+  { name: 'tutorial', label: 'Tutorial', weight: 100 },
+  { name: 'practical', label: 'Practical', weight: 50 },
+  { name: 'skill', label: 'Skill', weight: 25 },
+];
 
-const Calculator = ({ onCalculate, onReset }) => {
-  const [lecture, setLecture] = useState('');
-  const [tutorial, setTutorial] = useState('');
-  const [practical, setPractical] = useState('');
-  const [skill, setSkill] = useState('');
+function Calculator() {
+  const [scores, setScores] = useState({
+    lecture: '',
+    tutorial: '',
+    practical: '',
+    skill: '',
+  });
+  const [average, setAverage] = useState(null);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setScores({ ...scores, [name]: value });
+  };
 
   const handleCalculate = () => {
-    // Get all input values, defaulting to 0
-    const lec = parseFloat(lecture) || 0;
-    const tut = parseFloat(tutorial) || 0;
-    const prac = parseFloat(practical) || 0;
-    const skl = parseFloat(skill) || 0;
+    let totalWeightedSum = 0;
+    let totalWeights = 0;
 
-    // Define the weights for each component
-    const weights = { lec: 1.0, tut: 1.0, prac: 0.5, skl: 0.25 };
-    const totalWeight = weights.lec + weights.tut + weights.prac + weights.skl;
+    components.forEach(component => {
+      const scoreValue = scores[component.name];
+      // Check if the input is not empty and is a valid number
+      if (scoreValue !== '' && !isNaN(parseFloat(scoreValue))) {
+        totalWeightedSum += parseFloat(scoreValue) * component.weight;
+        totalWeights += component.weight;
+      }
+    });
 
-    // Calculate the weighted sum of all inputs
-    const weightedSum = (lec * weights.lec) + (tut * weights.tut) + (prac * weights.prac) + (skl * weights.skl);
-
-    // Calculate the final weighted average
-    const finalScore = totalWeight > 0 ? weightedSum / totalWeight : 0;
-
-    onCalculate(finalScore.toFixed(2));
+    if (totalWeights > 0) {
+      setAverage(totalWeightedSum / totalWeights);
+    } else {
+      setAverage(0); // Or null, if you prefer to show no result
+    }
   };
 
   const handleReset = () => {
-    setLecture('');
-    setTutorial('');
-    setPractical('');
-    setSkill('');
-    onReset();
+    setScores({
+      lecture: '',
+      tutorial: '',
+      practical: '',
+      skill: '',
+    });
+    setAverage(null);
   };
 
   return (
-    <>
-      <div className="input-grid">
-        <InputField icon={<BookOpen size={20} />} label="Lecture" weight={100} value={lecture} onChange={setLecture} />
-        <InputField icon={<Award size={20} />} label="Tutorial" weight={100} value={tutorial} onChange={setTutorial} />
-        {/* The weight for Practical is now updated to 50% */}
-        <InputField icon={<Sliders size={20} />} label="Practical" weight={50} value={practical} onChange={setPractical} />
-        <InputField icon={<Code size={20} />} label="Skill" weight={25} value={skill} onChange={setSkill} />
-      </div>
-      <div className="button-group">
-        <button onClick={handleCalculate} className="btn btn-primary">Calculate</button>
-        <button onClick={handleReset} className="btn btn-secondary">Reset</button>
-      </div>
-    </>
+    <div>
+      <h1>L-T-P-S Average Calculator</h1>
+      {components.map(comp => (
+        <div key={comp.name}>
+          <label>{comp.label} (Weight: {comp.weight}%)</label>
+          <input
+            type="number"
+            name={comp.name}
+            value={scores[comp.name]}
+            onChange={handleInputChange}
+            placeholder={`e.g., 85`}
+          />
+        </div>
+      ))}
+      <button onClick={handleCalculate}>Calculate</button>
+      <button onClick={handleReset}>Reset</button>
+
+      {average !== null && (
+        <div>
+          <h2>Your Weighted Average</h2>
+          <p>{average.toFixed(2)}%</p>
+          {average < 60 && <p>Keep Improving!</p>}
+        </div>
+      )}
+    </div>
   );
-};
+}
 
 export default Calculator;

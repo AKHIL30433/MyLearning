@@ -155,3 +155,24 @@ body {
     transform: scale(1);
   }
 }
+
+/* --- Status Message Styling --- */
+.status-message {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  display: inline-block;
+  animation: fadeIn-scaleUp 0.5s ease-out; /* Re-use existing animation */
+}
+
+.status-message.safe {
+  color: #065f46; /* A nice, deep green */
+  background-color: #d1fae5;
+}
+
+.status-message.danger {
+  color: #991b1b; /* A strong red */
+  background-color: #fee2e2;
+}
