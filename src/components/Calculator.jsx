@@ -1,12 +1,5 @@
 import React, { useState } from 'react';
-
-// Configuration for each input field
-const components = [
-  { name: 'lecture', label: 'Lecture', weight: 100 },
-  { name: 'tutorial', label: 'Tutorial', weight: 100 },
-  { name: 'practical', label: 'Practical', weight: 50 },
-  { name: 'skill', label: 'Skill', weight: 25 },
-];
+import './App.css'; // Make sure to import your CSS file
 
 function Calculator() {
   const [scores, setScores] = useState({
@@ -16,6 +9,13 @@ function Calculator() {
     skill: '',
   });
   const [average, setAverage] = useState(null);
+
+  const components = [
+    { name: 'lecture', label: 'Lecture', weight: 100 },
+    { name: 'tutorial', label: 'Tutorial', weight: 100 },
+    { name: 'practical', label: 'Practical', weight: 50 },
+    { name: 'skill', label: 'Skill', weight: 25 },
+  ];
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -28,53 +28,48 @@ function Calculator() {
 
     components.forEach(component => {
       const scoreValue = scores[component.name];
-      // Check if the input is not empty and is a valid number
-      if (scoreValue !== '' && !isNaN(parseFloat(scoreValue))) {
+      if (scoreValue.trim() !== '' && !isNaN(parseFloat(scoreValue))) {
         totalWeightedSum += parseFloat(scoreValue) * component.weight;
         totalWeights += component.weight;
       }
     });
 
-    if (totalWeights > 0) {
-      setAverage(totalWeightedSum / totalWeights);
-    } else {
-      setAverage(0); // Or null, if you prefer to show no result
-    }
+    setAverage(totalWeights > 0 ? (totalWeightedSum / totalWeights) : null);
   };
 
   const handleReset = () => {
-    setScores({
-      lecture: '',
-      tutorial: '',
-      practical: '',
-      skill: '',
-    });
+    setScores({ lecture: '', tutorial: '', practical: '', skill: '' });
     setAverage(null);
   };
 
   return (
-    <div>
-      <h1>L-T-P-S Average Calculator</h1>
-      {components.map(comp => (
-        <div key={comp.name}>
-          <label>{comp.label} (Weight: {comp.weight}%)</label>
-          <input
-            type="number"
-            name={comp.name}
-            value={scores[comp.name]}
-            onChange={handleInputChange}
-            placeholder={`e.g., 85`}
-          />
-        </div>
-      ))}
-      <button onClick={handleCalculate}>Calculate</button>
-      <button onClick={handleReset}>Reset</button>
+    <div className="calculator-container">
+      <h1 className="title">L-T-P-S Average Calculator</h1>
+      <div className="inputs-grid">
+        {components.map(({ name, label, weight }) => (
+          <div className="input-group" key={name}>
+            <label htmlFor={name}>{label} <span>(Weight: {weight}%)</span></label>
+            <input
+              type="number"
+              id={name}
+              name={name}
+              value={scores[name]}
+              onChange={handleInputChange}
+              placeholder="e.g., 85"
+            />
+          </div>
+        ))}
+      </div>
+      <div className="buttons-container">
+        <button onClick={handleCalculate} className="btn-calculate">Calculate</button>
+        <button onClick={handleReset} className="btn-reset">Reset</button>
+      </div>
 
       {average !== null && (
-        <div>
-          <h2>Your Weighted Average</h2>
-          <p>{average.toFixed(2)}%</p>
-          {average < 60 && <p>Keep Improving!</p>}
+        <div className="result-container">
+          <p className="result-label">Your Weighted Average</p>
+          <p className="result-percentage">{average.toFixed(2)}%</p>
+          {average < 75 && <p className="result-message">Keep Improving!</p>}
         </div>
       )}
     </div>
