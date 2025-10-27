@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './App.css'; // Make sure to import your CSS file
+import '../App.css'; // Make sure to import your CSS file
 
 function Calculator() {
   const [scores, setScores] = useState({
